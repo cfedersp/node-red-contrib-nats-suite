@@ -1,6 +1,6 @@
 ## Changelog
 
-### 0.0.4 – Stream Consumer Enhancements & Documentation
+### 0.0.5 – Stream Consumer Enhancements & Documentation
 
 #### New Features
 
