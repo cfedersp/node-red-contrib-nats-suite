@@ -1,8 +1,17 @@
 ## Changelog
 
-### 0.0.4 – Documentation & Feature Coverage
+### 0.0.4 – Stream Consumer Enhancements & Documentation
 
 #### New Features
+
+**Stream Consumer (`nats-suite-stream-consumer`)**
+- **Create on Init option**: New `createOnInit` setting to control whether a consumer is automatically created on node initialization
+- **Output data format**: Configurable output format and debug logging for consumed messages
+- **Flow control UI**: Improved UI with idle status indicator for better visibility of consumer state
+- **Consumer config visibility**: Refactored UI to show/hide consumer configuration options based on context
+
+**Stream Publisher (`nats-suite-stream-publisher`)**
+- **Create on Init option**: New `createOnInit` setting to control whether a stream is automatically created on node initialization
 
 **NATS Feature Coverage Documentation**
 - Added comprehensive NATS Feature Coverage section to README
@@ -17,11 +26,22 @@
 - Clear status indicators (✅ Complete, 🔧 In Development, 🔄 Partial, ❌ Not Implemented)
 - Roadmap for planned features
 
-#### Documentation Improvements
+#### Improvements
+- `nats-memory-server` moved from `dependencies` to `optionalDependencies` – no longer required for installation
+- Added contributors to `package.json`
+- Added npm downloads and Node.js version badges to README
+
+#### Documentation
 - All documentation files are now in English
 - Added legend explaining status symbols
 - Added feature-to-node mapping for easy reference
 - Improved structure and readability of README
+- Updated test cases in `TEST-CASES.md`
+
+#### CI/CD
+- Added workflow to create GitHub issues from TODO comments
+- Simplified todo-workflow by removing unused steps and permissions
+- Refactored `.npmignore` and updated `package.json` for development environment
 
 ---
 

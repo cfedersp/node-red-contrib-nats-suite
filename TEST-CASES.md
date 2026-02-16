@@ -18,7 +18,7 @@ Complete test suite for all nodes and features of the NATS Suite.
 
 ## Setup & Preparation
 
-### NATS Server start
+### Starting the NATS Server
 
 **Option 1: Docker**
 ```bash
@@ -30,7 +30,7 @@ docker run -p 4222:4222 -p 8222:8222 nats:latest -js
 nats-server -js
 ```
 
-**Option 3: Server Manager Node use**
+**Option 3: Using the Server Manager Node**
 - Node: `nats-suite-server-manager`
 - Config: Mode = "Embedded" or "Process"
 - Inject: `msg.payload.command = "start"`
@@ -104,7 +104,7 @@ Flow:
 
 ### 3. Publish - Message Headers
 
-**Test: Headers send**
+**Test: Sending Headers**
 
 Flow:
 ```
@@ -351,7 +351,7 @@ Flow:
 
 ### 7. Stream Publisher - Create Stream
 
-**Test: Stream create**
+**Test: Create Stream**
 
 Flow:
 ```
@@ -391,7 +391,7 @@ Flow:
 
 ### 8. Stream Publisher - Update Subjects
 
-**Test: Only Subjects update**
+**Test: Update Subjects Only**
 
 Flow:
 ```
@@ -427,7 +427,7 @@ Flow:
 
 ### 9. Stream Publisher - Publish Messages
 
-**Test: Messages in Stream publish**
+**Test: Publish Messages to Stream**
 
 Flow:
 ```
@@ -464,7 +464,7 @@ Flow:
 
 ### 10. Stream Consumer - Consume Messages
 
-**Test: Messages from Stream consume**
+**Test: Consume Messages from Stream**
 
 Flow:
 ```
@@ -519,7 +519,7 @@ return msg;
 
 ### 11. Consumer - Pause/Resume
 
-**Test A: Consumer pause**
+**Test A: Pause Consumer**
 
 Flow:
 ```
@@ -550,7 +550,7 @@ Flow:
 }
 ```
 
-**Test B: Consumer resume**
+**Test B: Resume Consumer**
 
 **Inject:**
 ```json
@@ -571,12 +571,12 @@ Flow:
 }
 ```
 
-**Test C: Pause during Consumption**
+**Test C: Pause During Consumption**
 
 Setup:
 1. Stream with 100 messages
-2. Consumer with Batch Size 100 start
-3. After 2 seconds: Pause send
+2. Start consumer with Batch Size 100
+3. After 2 seconds: Send pause
 4. Consumer should stop (in the middle of batch)
 
 ---
@@ -626,7 +626,7 @@ Flow:
 
 **Monitoring Loop (Function Node):**
 ```javascript
-// Monitoring all 5 seconds
+// Monitor every 5 seconds
 const interval = context.get('monitorInterval');
 if (!interval) {
   const id = setInterval(() => {
@@ -643,7 +643,7 @@ return null;
 
 ### 13. KV Put - Create/Update Keys
 
-**Test: Key-Value store**
+**Test: Store Key-Value**
 
 Flow:
 ```
@@ -744,7 +744,7 @@ Flow:
 
 ### 15. KV Get - Read Keys
 
-**Test: Key read**
+**Test: Read Key**
 
 Flow:
 ```
@@ -782,7 +782,7 @@ Flow:
 
 ### 16. KV List Keys
 
-**Test: All Keys list**
+**Test: List All Keys**
 
 Flow:
 ```
@@ -817,7 +817,7 @@ Flow:
 
 ### 17. KV Watch Keys
 
-**Test: Key changes monitor**
+**Test: Monitor Key Changes**
 
 Flow:
 ```
@@ -830,7 +830,7 @@ Flow:
 - Watch Pattern: `app.config.*` (or empty for all)
 - Ignore Deletes: FALSE
 
-**No Inject needed - runs automatically**
+**No inject needed - runs automatically**
 
 **Expected Output (on change):**
 ```json
@@ -854,7 +854,7 @@ Flow:
 
 ### 18. Object Put - Upload
 
-**Test: Object upload**
+**Test: Upload Object**
 
 Flow:
 ```
@@ -875,7 +875,7 @@ Flow:
     "version": "1.0.0",
     "settings": {
       "theme": "dark",
-      "language": "de"
+      "language": "en"
     }
   }
 }
@@ -896,7 +896,7 @@ Flow:
 
 ### 19. Object Get - Download
 
-**Test: Object download**
+**Test: Download Object**
 
 Flow:
 ```
@@ -922,7 +922,7 @@ Flow:
     "version": "1.0.0",
     "settings": {
       "theme": "dark",
-      "language": "de"
+      "language": "en"
     }
   },
   "filename": "config.json",
@@ -937,7 +937,7 @@ Flow:
 
 ### 20. Object List
 
-**Test: All Objects list**
+**Test: List All Objects**
 
 Flow:
 ```
@@ -980,7 +980,7 @@ Flow:
 
 ### 21. Service - Discovery
 
-**Test: Services discover**
+**Test: Discover Services**
 
 Flow:
 ```
@@ -1029,7 +1029,7 @@ Flow:
 
 ### 22. Service - Stats
 
-**Test: Service Stats retrieve**
+**Test: Retrieve Service Stats**
 
 Flow:
 ```
@@ -1072,7 +1072,7 @@ Flow:
 
 ### 23. Service - Ping
 
-**Test: Service check availability**
+**Test: Check Service Availability**
 
 Flow:
 ```
@@ -1115,7 +1115,7 @@ Flow:
 
 ### 24. Service - Run Service Endpoint
 
-**Test: Echo Service create**
+**Test: Create Echo Service**
 
 Flow 1 (Service):
 ```
@@ -1205,7 +1205,7 @@ return msg;
 
 ### 25. Service - Calculator Service (Complex)
 
-**Test: Calculator Service with multiple Endpoints**
+**Test: Calculator Service with Multiple Endpoints**
 
 Flow (Service):
 ```
@@ -1447,20 +1447,20 @@ for (let i = 0; i < 1000; i++) {
 return null;
 ```
 
-**Expected:** All 1000 Messages successfully sent
+**Expected:** All 1000 messages successfully sent
 
 ---
 
 ### 29. Stress Test - Consumer with Pause
 
-**Test: Pause under load**
+**Test: Pause Under Load**
 
 Setup:
-1. Stream with 10.000 messages
-2. Consumer with Batch 100 start
-3. After 50 Batches: Pause
+1. Stream with 10,000 messages
+2. Start consumer with Batch 100
+3. After 50 batches: Pause
 4. After 5 seconds: Resume
-5. Verify: All Messages consumed
+5. Verify: All messages consumed
 
 **Expected:** No lost messages
 
@@ -1472,12 +1472,12 @@ Setup:
 
 **Test:** Buffering on Connection Interruption
 
-1. Start NATS Server
-2. Start Publish Flow with buffering enabled
-3. Stop NATS Server
-4. Send 100 Messages (will be buffered)
-5. Start NATS Server
-6. Verify: All 100 Messages will be flushed
+1. Start NATS server
+2. Start publish flow with buffering enabled
+3. Stop NATS server
+4. Send 100 messages (will be buffered)
+5. Start NATS server
+6. Verify: All 100 messages are flushed
 
 ---
 
@@ -1511,5 +1511,5 @@ Setup:
 
 ---
 
-**Status:** All Use Cases defined and ready for testing!
+**Status:** All use cases defined and ready for testing!
 

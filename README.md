@@ -190,7 +190,7 @@ Use the `nats-suite-server-manager` node to run an embedded NATS server directly
 #### Binary Source Options
 | Source | Description |
 |--------|-------------|
-| **Auto-detect** | Uses `nats-memory-server` npm package, falls back to system PATH |
+| **Auto-detect** | Uses `nats-memory-server` npm package (optional dependency), falls back to system PATH |
 | **Custom Binary** | Mount your own nats-server binary (e.g., `/data/bin/nats-server-v2.12.2-linux-amd64`) |
 | **System PATH** | Uses `nats-server` from system PATH only |
 
