@@ -487,4 +487,4 @@ blanpa
 
 For issues or questions, please create an issue in the repository.
 
-Join our Discord community: [Discord Server](https://discord.gg/77RsM7dV)
+Join our Discord community: [Discord Server](https://discord.gg/gpMpUjd5ph)
