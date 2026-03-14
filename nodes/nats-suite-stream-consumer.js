@@ -284,6 +284,7 @@ module.exports = function (RED) {
           sequence: toNumber(jetMsg.seq),
           timestamp: Date.now(),
           redelivered: jetMsg.info.redelivered || false,
+          redelivery_count: toNumber(jetMsg.info.redeliveryCount) || 0,
           pending: toNumber(jetMsg.info.pending) || 0,
         };
 
