@@ -12,6 +12,7 @@ help:
 	@echo "  clean           - Clean node_modules and coverage"
 	@echo "  dev             - Start legacy development environment"
 	@echo "  docker-up       - Start Node-RED with Docker"
+	@echo " docker-dev       - Start Node-RED with Docker in development mode"
 	@echo "  docker-down     - Stop Node-RED Docker container"
 	@echo "  docker-logs     - Show Docker logs"
 	@echo "  docker-restart  - Restart Docker container"

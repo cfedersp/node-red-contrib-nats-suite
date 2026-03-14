@@ -21,8 +21,10 @@ module.exports = function (RED) {
 
     // Bucket configuration - can use bucketConfig node OR direct settings
     this.bucket = config.bucket || '';
-    this.bucketConfig = config.bucketConfig ? RED.nodes.getNode(config.bucketConfig) : null;
-    
+    this.bucketConfig = config.bucketConfig
+      ? RED.nodes.getNode(config.bucketConfig)
+      : null;
+
     if (this.bucketConfig) {
       this.bucket = this.bucketConfig.bucket;
       this.serverConfig = this.bucketConfig.serverConfig;
@@ -44,11 +46,11 @@ module.exports = function (RED) {
     // Helper: Get or create KV bucket
     const getKVBucket = async () => {
       if (kvStore) return kvStore;
-      
+
       try {
         const nc = await node.serverConfig.getConnection();
         const js = nc.jetstream();
-        
+
         try {
           kvStore = await js.views.kv(node.bucket);
           return kvStore;
@@ -63,13 +65,13 @@ module.exports = function (RED) {
               max_value_size: node.maxValueSize || undefined,
               compression: node.compression,
               replicas: node.replicas,
-              storage: node.storage === 'memory' ? 'memory' : 'file'
+              storage: node.storage === 'memory' ? 'memory' : 'file',
             };
-            
+
             Object.keys(createOptions).forEach(key => {
               if (createOptions[key] === undefined) delete createOptions[key];
             });
-            
+
             kvStore = await js.views.kv(node.bucket, createOptions);
           }
           return kvStore;
@@ -81,7 +83,7 @@ module.exports = function (RED) {
     };
 
     // Helper: Stringify value if needed
-    const prepareValue = (value) => {
+    const prepareValue = value => {
       if (config.stringifyJSON && typeof value === 'object') {
         return JSON.stringify(value);
       }
@@ -89,12 +91,12 @@ module.exports = function (RED) {
     };
 
     // Bucket Management Operations
-    const performBucketOperation = async (msg) => {
+    const performBucketOperation = async msg => {
       try {
         const nc = await node.serverConfig.getConnection();
         const js = nc.jetstream();
         const jsm = await nc.jetstreamManager();
-        
+
         const operation = msg.operation || config.operation || 'put';
         const bucketName = msg.bucket || node.bucket || '';
 
@@ -106,13 +108,29 @@ module.exports = function (RED) {
         switch (operation) {
           case 'bucket-create': {
             const createOptions = {
-              history: msg.history ? parseInt(msg.history, 10) : (node.history || 10),
-              max_age: msg.maxAge ? parseInt(msg.maxAge, 10) * 1000 : (node.maxAge ? node.maxAge * 1000 : undefined),
-              max_bytes: msg.maxBytes ? parseInt(msg.maxBytes, 10) : (node.maxBytes || undefined),
-              max_value_size: msg.maxValueSize ? parseInt(msg.maxValueSize, 10) : (node.maxValueSize || undefined),
-              compression: msg.compression !== undefined ? !!msg.compression : node.compression,
-              replicas: msg.replicas ? parseInt(msg.replicas, 10) : (node.replicas || 1),
-              storage: msg.storage || node.storage === 'memory' ? 'memory' : 'file'
+              history: msg.history
+                ? parseInt(msg.history, 10)
+                : node.history || 10,
+              max_age: msg.maxAge
+                ? parseInt(msg.maxAge, 10) * 1000
+                : node.maxAge
+                  ? node.maxAge * 1000
+                  : undefined,
+              max_bytes: msg.maxBytes
+                ? parseInt(msg.maxBytes, 10)
+                : node.maxBytes || undefined,
+              max_value_size: msg.maxValueSize
+                ? parseInt(msg.maxValueSize, 10)
+                : node.maxValueSize || undefined,
+              compression:
+                msg.compression !== undefined
+                  ? !!msg.compression
+                  : node.compression,
+              replicas: msg.replicas
+                ? parseInt(msg.replicas, 10)
+                : node.replicas || 1,
+              storage:
+                msg.storage || node.storage === 'memory' ? 'memory' : 'file',
             };
 
             Object.keys(createOptions).forEach(key => {
@@ -120,8 +138,16 @@ module.exports = function (RED) {
             });
 
             await js.views.kv(bucketName, createOptions);
-            msg.payload = { operation: 'bucket-create', bucket: bucketName, success: true };
-            node.status({ fill: 'green', shape: 'dot', text: `created: ${bucketName}` });
+            msg.payload = {
+              operation: 'bucket-create',
+              bucket: bucketName,
+              success: true,
+            };
+            node.status({
+              fill: 'green',
+              shape: 'dot',
+              text: `created: ${bucketName}`,
+            });
             break;
           }
 
@@ -132,7 +158,7 @@ module.exports = function (RED) {
               operation: 'bucket-info',
               bucket: bucketName,
               values: status.values || 0,
-              bytes: status.bytes || 0
+              bytes: status.bytes || 0,
             };
             node.status({ fill: 'green', shape: 'dot', text: bucketName });
             break;
@@ -141,8 +167,16 @@ module.exports = function (RED) {
           case 'bucket-delete': {
             const kv = await js.views.kv(bucketName);
             await kv.destroy();
-            msg.payload = { operation: 'bucket-delete', bucket: bucketName, success: true };
-            node.status({ fill: 'green', shape: 'dot', text: `deleted: ${bucketName}` });
+            msg.payload = {
+              operation: 'bucket-delete',
+              bucket: bucketName,
+              success: true,
+            };
+            node.status({
+              fill: 'green',
+              shape: 'dot',
+              text: `deleted: ${bucketName}`,
+            });
             break;
           }
 
@@ -156,14 +190,18 @@ module.exports = function (RED) {
                 buckets.push({
                   name: bucketName,
                   values: stream.state.messages || 0,
-                  bytes: stream.state.bytes || 0
+                  bytes: stream.state.bytes || 0,
                 });
               }
             }
             msg.payload = buckets;
             msg.operation = 'bucket-list';
             msg.count = buckets.length;
-            node.status({ fill: 'green', shape: 'dot', text: `${buckets.length} buckets` });
+            node.status({
+              fill: 'green',
+              shape: 'dot',
+              text: `${buckets.length} buckets`,
+            });
             break;
           }
 
@@ -191,8 +229,15 @@ module.exports = function (RED) {
       try {
         // Check if this is a bucket management operation
         const operation = msg.operation || config.operation || 'put';
-        
-        if (['bucket-create', 'bucket-info', 'bucket-delete', 'bucket-list'].includes(operation)) {
+
+        if (
+          [
+            'bucket-create',
+            'bucket-info',
+            'bucket-delete',
+            'bucket-list',
+          ].includes(operation)
+        ) {
           await performBucketOperation(msg);
           return;
         }
@@ -217,7 +262,9 @@ module.exports = function (RED) {
 
         // Debug logging for operation
         if (isDebug) {
-          node.log(`[KV PUT] Operation: ${operation.toUpperCase()}, Key: ${key}, Bucket: ${node.bucket}`);
+          node.log(
+            `[KV PUT] Operation: ${operation.toUpperCase()}, Key: ${key}, Bucket: ${node.bucket}`
+          );
         }
 
         // Perform operation - use msg.operation if provided, otherwise config.operation
@@ -240,20 +287,22 @@ module.exports = function (RED) {
             }
 
             const preparedValue = prepareValue(value);
-            
+
             // Note: TTL is only supported at bucket level, not per-key
             // Individual key TTL is not supported by NATS KV Store
             const revision = await kv.put(key, preparedValue);
 
             if (isDebug) {
-              node.log(`[KV PUT] PUT successful - Key: ${key}, Revision: ${revision}`);
+              node.log(
+                `[KV PUT] PUT successful - Key: ${key}, Revision: ${revision}`
+              );
             }
 
             msg.revision = revision;
             msg.operation = 'PUT';
             msg.key = key;
             msg.bucket = node.bucket;
-            
+
             node.send(msg);
             node.status({ fill: 'green', shape: 'dot', text: `put: ${key}` });
             break;
@@ -276,28 +325,38 @@ module.exports = function (RED) {
             }
 
             const preparedValue = prepareValue(value);
-            
+
             // Note: TTL is only supported at bucket level, not per-key
             // Individual key TTL is not supported by NATS KV Store
             try {
               const revision = await kv.create(key, preparedValue);
-              
+
               if (isDebug) {
-                node.log(`[KV PUT] CREATE successful - Key: ${key}, Revision: ${revision}`);
+                node.log(
+                  `[KV PUT] CREATE successful - Key: ${key}, Revision: ${revision}`
+                );
               }
-              
+
               msg.revision = revision;
               msg.operation = 'PUT';
               msg.key = key;
               msg.bucket = node.bucket;
               msg._created = true;
-              
+
               node.send(msg);
-              node.status({ fill: 'green', shape: 'dot', text: `created: ${key}` });
+              node.status({
+                fill: 'green',
+                shape: 'dot',
+                text: `created: ${key}`,
+              });
             } catch (err) {
               if (err.message && err.message.includes('wrong last sequence')) {
                 node.error(`Key already exists: ${key}`, msg);
-                node.status({ fill: 'red', shape: 'ring', text: 'already exists' });
+                node.status({
+                  fill: 'red',
+                  shape: 'ring',
+                  text: 'already exists',
+                });
               } else {
                 throw err;
               }
@@ -322,7 +381,7 @@ module.exports = function (RED) {
             }
 
             const preparedValue = prepareValue(value);
-            
+
             try {
               // Get current revision first
               const current = await kv.get(key);
@@ -335,19 +394,25 @@ module.exports = function (RED) {
               // Note: TTL is only supported at bucket level, not per-key
               // Individual key TTL is not supported by NATS KV Store
               const revision = await kv.put(key, preparedValue);
-              
+
               if (isDebug) {
-                node.log(`[KV PUT] UPDATE successful - Key: ${key}, Revision: ${revision}`);
+                node.log(
+                  `[KV PUT] UPDATE successful - Key: ${key}, Revision: ${revision}`
+                );
               }
-              
+
               msg.revision = revision;
               msg.operation = 'PUT';
               msg.key = key;
               msg.bucket = node.bucket;
               msg._updated = true;
-              
+
               node.send(msg);
-              node.status({ fill: 'green', shape: 'dot', text: `updated: ${key}` });
+              node.status({
+                fill: 'green',
+                shape: 'dot',
+                text: `updated: ${key}`,
+              });
             } catch (err) {
               if (err.message && err.message.includes('no message found')) {
                 node.error(`Key does not exist: ${key}`, msg);
@@ -362,34 +427,38 @@ module.exports = function (RED) {
           case 'delete': {
             // Soft delete (mark as deleted)
             await kv.delete(key);
-            
+
             if (isDebug) {
               node.log(`[KV PUT] DELETE successful - Key: ${key}`);
             }
-            
+
             msg.operation = 'DEL';
             msg.key = key;
-            msg.bucket = this.bucketConfig.bucket;
+            msg.bucket = node.bucket;
             msg._deleted = true;
-            
+
             node.send(msg);
-            node.status({ fill: 'blue', shape: 'dot', text: `deleted: ${key}` });
+            node.status({
+              fill: 'blue',
+              shape: 'dot',
+              text: `deleted: ${key}`,
+            });
             break;
           }
 
           case 'purge': {
             // Hard delete (remove all revisions)
             await kv.purge(key);
-            
+
             if (isDebug) {
               node.log(`[KV PUT] PURGE successful - Key: ${key}`);
             }
-            
+
             msg.operation = 'PURGE';
             msg.key = key;
-            msg.bucket = this.bucketConfig.bucket;
+            msg.bucket = node.bucket;
             msg._purged = true;
-            
+
             node.send(msg);
             node.status({ fill: 'blue', shape: 'dot', text: `purged: ${key}` });
             break;
@@ -404,7 +473,6 @@ module.exports = function (RED) {
         setTimeout(() => {
           node.status({ fill: 'yellow', shape: 'ring', text: 'ready' });
         }, 1000);
-
       } catch (err) {
         node.error(`KV PUT error: ${err.message}`, msg);
         node.status({ fill: 'red', shape: 'ring', text: 'error' });
@@ -421,4 +489,3 @@ module.exports = function (RED) {
 
   RED.nodes.registerType('nats-suite-kv-put', UnsKvPutNode);
 };
-
