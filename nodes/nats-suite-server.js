@@ -36,7 +36,7 @@ module.exports = function (RED) {
       }
     }
     if (this.authMethod === 'nkey' && this.nkeySeed.length == 0) {
-      this.error(`  - Auth Method: ${this.authMethod} requires the nkeySeed to be set.`);
+      this.error(`[NATS] Auth Method: ${this.authMethod} requires the nkeySeed to be set.`);
     }
     
     // Debug connection info
